@@ -10,8 +10,16 @@ function Navbar() {
         Moj Termin Subscriber App
       </Link>
 
-      <div className="collapse navbar-collapse justify-content-end">
-        <ul className="navbar-nav">
+      <div className="collapse navbar-collapse">
+        <ul className="navbar-nav me-auto">
+          {user && (
+            <li className="nav-item">
+              <Link to="/subs" className="nav-link text-primary">My Subscriptions</Link>
+            </li>
+          )}
+        </ul>
+
+        <ul className="navbar-nav ms-auto">
           {!user ? (
             <>
               <li className="nav-item">

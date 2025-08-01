@@ -1,12 +1,12 @@
 import axiosInstance from "../axios/axios.js";
 
 const subscriptionRepository = {
-    subscribe: async () => {
-        return await axiosInstance.post(`/subscriptions/subscribe`)
+    subscribe: async (doctor_id) => {
+        return await axiosInstance.post(`/subscriptions/subscribe/${doctor_id}`)
     },
 
-    getByUser: async (user_id) => {
-        return await axiosInstance.get(`/subscriptions/${user_id}`)
+    getByUser: async () => {
+        return await axiosInstance.get(`/subscriptions/user/me`)
     },
 
     unsubscribe: async (sub_id) => {

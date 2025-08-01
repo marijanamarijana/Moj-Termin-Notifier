@@ -8,9 +8,8 @@ from database.database import get_db
 router = APIRouter(prefix="/api/subscriptions", tags=["Subscriptions"])
 
 
-@router.post("/subscribe")
+@router.post("/subscribe/{doctor_id}")
 def create_subscription(doctor_id: int, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
-        #user_id: int,
     subscription = subscription_service.create_subscription(db, current_user.id, doctor_id)
     return subscription
 
@@ -23,7 +22,7 @@ def get_subscription(subscription_id: int, db: Session = Depends(get_db)):
     return subscription
 
 
-@router.get("/user/{user_id}")
+@router.get("/user/me")
 def get_subscriptions_by_user(db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
     return subscription_service.get_subscriptions_by_user(db, current_user.id)
 
