@@ -13,8 +13,8 @@ async def send_email_notification(to_email: str, subject: str, body: str):
         message,
         hostname="smtp.mailtrap.io",
         port=2525,
-        username="cafa14953932ee",  # Mailtrap username
-        password="6cc78cdcf37f7b",  # Mailtrap password
+        username="97f1da217a3c5b",  # Mailtrap username
+        password="ef9f0d289ed868",  # Mailtrap password
         start_tls=False,
     )
     return {"message": "Email sent successfully"}

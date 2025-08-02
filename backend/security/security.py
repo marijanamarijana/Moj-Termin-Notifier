@@ -1,10 +1,10 @@
 from datetime import datetime, timedelta
 from jose import JWTError, jwt
 
-# Secret key (should be env var in production)
+# should be env var if it is in production
 SECRET_KEY = "your_super_secret_key_here"
 ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 60  # 1 hour
+ACCESS_TOKEN_EXPIRE_MINUTES = 60
 
 
 def create_access_token(data: dict, expires_delta: timedelta | None = None):
@@ -18,6 +18,6 @@ def create_access_token(data: dict, expires_delta: timedelta | None = None):
 def verify_access_token(token: str):
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        return payload  # Contains whatever you put in 'data' when creating
+        return payload
     except JWTError:
         return None

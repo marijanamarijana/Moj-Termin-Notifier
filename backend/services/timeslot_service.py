@@ -4,8 +4,8 @@ from model.models import DoctorTimeslot
 from repos import timeslot_repo
 
 
-def create_timeslot(db: Session, doctor_id: int, free_slot: str):
-    slot = DoctorTimeslot(doctor_id=doctor_id, free_slot=datetime.fromisoformat(free_slot))
+def create_timeslot(db: Session, doctor_id: int, free_slot: datetime):
+    slot = DoctorTimeslot(doctor_id=doctor_id, free_slot=free_slot)
     return timeslot_repo.create(db, slot)
 
 

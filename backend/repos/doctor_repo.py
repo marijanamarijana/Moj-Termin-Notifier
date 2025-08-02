@@ -6,6 +6,10 @@ def get_by_id(db: Session, doctor_id: int):
     return db.query(Doctor).filter(Doctor.id == doctor_id).first()
 
 
+def check_existance(db: Session, doctor_id: int):
+    return db.query(db.query(Doctor).filter(Doctor.id == doctor_id).exists()).scalar()
+
+
 def get_all(db: Session):
     return db.query(Doctor).all()
 

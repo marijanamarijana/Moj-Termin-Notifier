@@ -1,3 +1,4 @@
+from datetime import datetime
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from services import timeslot_service
@@ -6,8 +7,8 @@ from database.database import get_db
 router = APIRouter(prefix="/api/timeslots", tags=["Timeslots"])
 
 
-@router.post("/")
-def create_timeslot(doctor_id: int, free_slot: str, db: Session = Depends(get_db)):
+@router.post("/add/{doctor_id}/{free_slot}")
+def create_timeslot(doctor_id: int, free_slot: datetime, db: Session = Depends(get_db)):
     slot = timeslot_service.create_timeslot(db, doctor_id, free_slot)
     return slot
 

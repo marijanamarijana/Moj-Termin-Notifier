@@ -10,13 +10,6 @@ def get_by_user(db: Session, user_id: int) -> list[DoctorSubscription]:
     return db.query(DoctorSubscription).filter(DoctorSubscription.user_id == user_id).all()
 
 
-# def get_by_user_and_doctor(db: Session, user_id: int, doctor_id: int):
-#     return db.query(DoctorSubscription).filter(
-#         DoctorSubscription.user_id == user_id,
-#         DoctorSubscription.doctor_id == doctor_id
-#     ).first()
-
-
 def create(db: Session, sub: DoctorSubscription):
     db.add(sub)
     db.commit()

@@ -6,8 +6,7 @@ from routes import user_router, doctor_router, timeslot_router, subscription_rou
 from scheduler.scheduler import start_scheduler
 
 Base.metadata.create_all(bind=engine)
-# Base.metadata.drop_all(engine)
-# Base.metadata.create_all(engine)
+
 app = FastAPI()
 
 start_scheduler()

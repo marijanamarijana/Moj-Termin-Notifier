@@ -1,4 +1,4 @@
-from fastapi import HTTPException
+from fastapi import HTTPException, status
 from sqlalchemy.orm import Session
 from model.models import Doctor
 from repos import doctor_repo
@@ -7,6 +7,13 @@ import requests
 
 
 def add_doctor(db: Session, doctor_id: int):
+
+    if doctor_repo.check_existance(db, doctor_id):
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="Doctor already exists"
+        )
+
     url = f"https://mojtermin.mk/api/pp/resources/{doctor_id}/slots_availability"
     r = requests.get(url)
 
