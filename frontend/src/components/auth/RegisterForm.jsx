@@ -30,7 +30,6 @@ function RegisterForm() {
       const response = await axiosInstance.post("/users/register", formData);
       setMessage(response.data.message);
 
-      // Wait a second then redirect
       setTimeout(() => {
         navigate("/login");
       }, 1000);

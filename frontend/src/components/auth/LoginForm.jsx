@@ -9,7 +9,7 @@ function LoginForm() {
   const [error, setError] = useState("");
 
   const { handleLogin } = useAuth();
-  const navigate = useNavigate();  // <-- get navigate function
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -31,7 +31,7 @@ function LoginForm() {
       localStorage.setItem("token", token);
       handleLogin(user);
 
-      navigate("/");  // <-- redirect to home page after login
+      navigate("/");
     } catch (err) {
       setError("Login failed. Please check your email and password.");
       console.error(err);

@@ -30,11 +30,9 @@ const useDoctors = () => {
             })
     }, [fetchDoctors]);
 
-
     useEffect(() => {
     fetchDoctors();
     }, [fetchDoctors]);
-
 
     return {...state, onAdd: onAdd};
 };

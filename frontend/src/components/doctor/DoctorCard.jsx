@@ -29,7 +29,6 @@ function DoctorCard({ doctor }) {
       <Link to={`/doctors/${doctor.id}/slots`} className="btn btn-muted btn-outline-dark">
          See Available Dates
        </Link>
-      {/*<p className="card-text text-muted">{doctor.id}</p>*/}
 
       {user && (
         <div className="mt-2">
