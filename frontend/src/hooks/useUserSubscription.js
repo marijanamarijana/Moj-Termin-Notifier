@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import subscriptionRepository from "../repository/subscriptionRepository";
-import { useAuth } from "../auth/AuthContext.jsx";
+import { useAuth } from "./useAuth.js";
 
 const initialState = {
   subscriptions: [],

@@ -31,7 +31,4 @@ export function AuthProvider({ children }) {
   );
 }
 
-// Custom hook to use auth context
-export function useAuth() {
-  return useContext(AuthContext);
-}
+export default AuthContext;

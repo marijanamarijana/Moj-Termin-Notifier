@@ -1,6 +1,6 @@
 import { useState } from "react";
 import axiosInstance from "../../axios/axios.js";
-import { useAuth } from "../../auth/AuthContext";
+import { useAuth } from "../../hooks/useAuth.js";
 import { useNavigate } from "react-router-dom";
 
 function LoginForm() {
@@ -81,4 +81,3 @@ function LoginForm() {
 }
 
 export default LoginForm;
-

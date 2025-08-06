@@ -1,5 +1,5 @@
 import React from "react";
-import { useAuth } from "../../auth/AuthContext";
+import { useAuth } from "../../hooks/useAuth.js";
 import useUserSubscriptions from "../../hooks/useUserSubscription";
 import {Link} from "react-router-dom";
 

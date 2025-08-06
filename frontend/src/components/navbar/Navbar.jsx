@@ -1,4 +1,4 @@
-import { useAuth } from "../../auth/AuthContext";
+import { useAuth } from "../../hooks/useAuth.js";
 import { Link } from "react-router-dom";
 
 function Navbar() {

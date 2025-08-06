@@ -26,5 +26,5 @@ def job():
 
 def start_scheduler():
     scheduler = BackgroundScheduler()
-    scheduler.add_job(job, "interval", seconds=30)  # every hour
+    scheduler.add_job(job, "interval", seconds=3600)
     scheduler.start()

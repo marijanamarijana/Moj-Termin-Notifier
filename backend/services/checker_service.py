@@ -16,7 +16,6 @@ def check_new_dates(db: Session, doctor_id: int, user_email: str):
     old_slots = timeslot_service.get_timeslots_by_doctor(db, doctor_id)
     old_dates = {slot.free_slot for slot in old_slots}
     new_dates = timeslot_service.get_timeslots_from_api(doctor_data["timeslots"])
-    new_dates = {datetime.fromisoformat(x) for x in new_dates}
 
     now = datetime.utcnow()
 

@@ -1,13 +1,15 @@
 from sqlalchemy.orm import Session
 from model.models import DoctorTimeslot
+from sqlalchemy import asc
 
 
 def get_by_id(db: Session, slot_id: int) -> DoctorTimeslot:
-    return db.query(DoctorTimeslot).filter(DoctorTimeslot.id == slot_id).first()
+    return (db.query(DoctorTimeslot)
+            .filter(DoctorTimeslot.id == slot_id).first())
 
 
 def get_by_doctor(db: Session, doctor_id: int) -> list[DoctorTimeslot]:
-    return db.query(DoctorTimeslot).filter(DoctorTimeslot.doctor_id == doctor_id).all()
+    return db.query(DoctorTimeslot).filter(DoctorTimeslot.doctor_id == doctor_id).order_by(asc(DoctorTimeslot.free_slot)).all()
 
 
 def create(db: Session, timeslot: DoctorTimeslot) -> DoctorTimeslot:

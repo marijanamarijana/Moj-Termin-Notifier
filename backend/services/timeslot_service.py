@@ -15,7 +15,7 @@ def get_timeslots_from_api(timeslots):
     for key, slots in timeslots.items():
         for slot in slots:
             if slot.get("isAvailable"):
-                available_dates.add(slot["term"])
+                available_dates.add(datetime.fromisoformat(slot["term"]))
 
     return available_dates
 

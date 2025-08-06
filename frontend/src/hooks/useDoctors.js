@@ -22,7 +22,6 @@ const useDoctors = () => {
     }, []);
 
     const onAdd = useCallback((data) => {
-        console.log(data)
         doctorRepository
             .add(data)
             .then(() => {
