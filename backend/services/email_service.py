@@ -4,7 +4,7 @@ from email.message import EmailMessage
 
 async def send_email_notification(to_email: str, subject: str, body: str):
     message = EmailMessage()
-    message["From"] = "youremail@example.com"
+    message["From"] = "your.termin.notifier@example.com"
     message["To"] = to_email
     message["Subject"] = subject
     message.set_content(body)

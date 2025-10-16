@@ -8,7 +8,7 @@ import requests
 
 def add_doctor(db: Session, doctor_id: int):
 
-    if doctor_repo.check_existance(db, doctor_id):
+    if doctor_repo.check_existence(db, doctor_id):
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
             detail="Doctor already exists"
