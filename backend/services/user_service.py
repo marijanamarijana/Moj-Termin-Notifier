@@ -7,7 +7,7 @@ from repos import user_repo
 from passlib.context import CryptContext
 from security.security import create_access_token
 
-# Use Argon2 instead of bcrypt
+
 pwd_context = CryptContext(schemes=["argon2"], deprecated="auto")
 
 
