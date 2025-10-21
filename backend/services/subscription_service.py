@@ -1,9 +1,25 @@
 from sqlalchemy.orm import Session
 from model.models import DoctorSubscription
-from repos import subscribed_repo
+from repos import subscribed_repo, user_repo, doctor_repo
+from fastapi import HTTPException, status
 
 
 def create_subscription(db: Session, user_id: int, doctor_id: int):
+    user = user_repo.get_by_id(db, user_id)
+    doctor = doctor_repo.get_by_id(db, doctor_id)
+
+    if user is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"User with id {user_id} not found."
+        )
+
+    if doctor is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Doctor with id {doctor_id} not found."
+        )
+
     sub = DoctorSubscription(user_id=user_id, doctor_id=doctor_id)
     return subscribed_repo.create(db, sub)
 

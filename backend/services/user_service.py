@@ -54,28 +54,28 @@ def register_user(db: Session, user_data: UserCreate):
     return new_user
 
 
-# def get_user_by_id(db: Session, user_id: int):
-#     return user_repo.get_by_id(db, user_id)
-#
-#
-# def get_user_by_email(db: Session, email: str):
-#     return user_repo.get_by_email(db, email)
-#
-#
-# def get_all_users(db: Session):
-#     return user_repo.get_all(db)
+def get_user_by_id(db: Session, user_id: int):
+    return user_repo.get_by_id(db, user_id)
 
 
-# def update_user(db: Session, user_id: int, updates: dict): # add a router method for this
-#     user = user_repo.get_by_id(db, user_id)
-#     if not user:
-#         return None
-#     return user_repo.update(db, user, updates)
+def get_user_by_email(db: Session, email: str):
+    return user_repo.get_by_email(db, email)
 
 
-# def delete_user(db: Session, user_id: int):
-#     user = user_repo.get_by_id(db, user_id)
-#     if user:
-#         user_repo.delete(db, user)
-#         return True
-#     return False
+def get_all_users(db: Session):
+    return user_repo.get_all(db)
+
+
+def update_user(db: Session, user_id: int, updates: dict): # add a router method for this
+    user = user_repo.get_by_id(db, user_id)
+    if not user:
+        return None
+    return user_repo.update(db, user, updates)
+
+
+def delete_user(db: Session, user_id: int):
+    user = user_repo.get_by_id(db, user_id)
+    if user:
+        user_repo.delete(db, user)
+        return True
+    return False

@@ -11,14 +11,14 @@ from fastapi.security import OAuth2PasswordRequestForm
 router = APIRouter(prefix="/api/users", tags=["Users"])
 
 
-# @router.get("/me")
-# def read_users_me(current_user: User = Depends(get_current_user)):
-#     return current_user
-#
-#
-# @router.get("/all")
-# def get_all_users(db: Session = Depends(get_db)):
-#     return user_service.get_all_users(db)
+@router.get("/me")
+def read_users_me(current_user: User = Depends(get_current_user)):
+    return current_user
+
+
+@router.get("/all")
+def get_all_users(db: Session = Depends(get_db)):
+    return user_service.get_all_users(db)
 
 
 @router.post("/login")
@@ -36,24 +36,25 @@ def register(user: UserCreate, db: Session = Depends(get_db)):
     return JSONResponse(content={"message": f"User {new_user.username} registered successfully."})
 
 
-# @router.get("/{user_id}")
-# def get_user_by_id(user_id: int, db: Session = Depends(get_db)):
-#     user = user_service.get_user_by_id(db, user_id)
-#     if not user:
-#         raise HTTPException(detail="User not found")
-#     return user
-#
-#
-# @router.get("/email/{user_id}")
-# def get_user_by_email(user_email: str, db: Session = Depends(get_db)):
-#     user = user_service.get_user_by_email(db, user_email)
-#     if not user:
-#         raise HTTPException(detail="User not found")
-#     return user
-#
-# @router.delete("/delete/{user_id}")
-# def delete_user(user_id: int, db: Session = Depends(get_db)):
-#     success = user_service.delete_user(db, user_id)
-#     if not success:
-#         raise HTTPException(detail="User not found")
-#     return {"detail": "User deleted"}
+@router.get("/{user_id}")
+def get_user_by_id(user_id: int, db: Session = Depends(get_db)):
+    user = user_service.get_user_by_id(db, user_id)
+    if not user:
+        raise HTTPException(detail="User not found")
+    return user
+
+
+@router.get("/email/{user_id}")
+def get_user_by_email(user_email: str, db: Session = Depends(get_db)):
+    user = user_service.get_user_by_email(db, user_email)
+    if not user:
+        raise HTTPException(detail="User not found")
+    return user
+
+
+@router.delete("/delete/{user_id}")
+def delete_user(user_id: int, db: Session = Depends(get_db)):
+    success = user_service.delete_user(db, user_id)
+    if not success:
+        raise HTTPException(detail="User not found")
+    return {"detail": "User deleted"}
