@@ -6,7 +6,7 @@ from fastapi import HTTPException, status
 
 
 def create_timeslot(db: Session, doctor_id: int, free_slot: datetime):
-    doctor = doctor_repo.get_by_id(doctor_id)
+    doctor = doctor_repo.get_by_id(db, doctor_id)
     if not doctor:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,

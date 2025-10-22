@@ -1,6 +1,6 @@
 import pytest
 from fastapi import HTTPException, status
-from model.models import Base, User, Doctor, DoctorSubscription
+from model.models import User, Doctor, DoctorSubscription
 from services import subscription_service
 
 

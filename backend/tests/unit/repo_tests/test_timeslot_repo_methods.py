@@ -90,14 +90,11 @@ def test_delete_timeslot(db_session, sample_doctor):
 
 
 def test_two_slots_with_the_same_properties_dont_have_the_same_id(db_session, sample_doctor):
-    slot1 = DoctorTimeslot(
-        doctor_id=sample_doctor.id,
-        free_slot=datetime.now(timezone.utc) + timedelta(hours=2)
-    )
-    slot2 = DoctorTimeslot(
-        doctor_id=sample_doctor.id,
-        free_slot=datetime.now(timezone.utc) + timedelta(hours=2)
-    )
+    slot_time = datetime.now(timezone.utc) + timedelta(hours=2)
+
+    slot1 = DoctorTimeslot(doctor_id=sample_doctor.id, free_slot=slot_time)
+    slot2 = DoctorTimeslot(doctor_id=sample_doctor.id, free_slot=slot_time)
+
     timeslot_repo.create(db_session, slot1)
     timeslot_repo.create(db_session, slot2)
 

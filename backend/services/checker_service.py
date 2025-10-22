@@ -10,7 +10,7 @@ def check_new_dates(db: Session, doctor_id: int, user_email: str):
     r = requests.get(url)
 
     if r.status_code != 200:
-        raise HTTPException(detail="Doctor not found or API blocked")
+        raise HTTPException(detail="Doctor not found or API blocked!")
 
     doctor_data = r.json()
     old_slots = timeslot_service.get_timeslots_by_doctor(db, doctor_id)
