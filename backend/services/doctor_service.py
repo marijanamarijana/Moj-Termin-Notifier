@@ -17,10 +17,10 @@ def add_doctor(db: Session, doctor_id: int):
     r = requests.get(url)
 
     if r.status_code != 200:
-        raise HTTPException(detail="Doctor not found or API blocked")
-
-    if get_doctor_by_id(db, doctor_id):
-        raise HTTPException(detail="Doctor already in system")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Doctor not found or API blocked"
+        )
 
     doctor_data = r.json()
     name = doctor_data["name"]

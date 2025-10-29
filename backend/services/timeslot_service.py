@@ -10,7 +10,7 @@ def create_timeslot(db: Session, doctor_id: int, free_slot: datetime):
     if not doctor:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Doctor with id {doctor_id} not found. Cannot create timeslot"
+            detail=f"Doctor with id {doctor_id} not found. Cannot create timeslot!"
         )
 
     slot = DoctorTimeslot(doctor_id=doctor_id, free_slot=free_slot)
@@ -29,6 +29,13 @@ def get_timeslots_from_api(timeslots):
 
 
 def get_timeslots_by_doctor(db: Session, doctor_id: int):
+    existence = doctor_repo.check_existence(db, doctor_id)
+    if not existence:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Doctor with id {doctor_id} not found. Cannot get timeslots!"
+        )
+
     return timeslot_repo.get_by_doctor(db, doctor_id)
 
 

@@ -11,7 +11,7 @@ def create_subscription(db: Session, user_id: int, doctor_id: int):
     if user is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"User with id {user_id} not found."
+            detail=f"User not found."
         )
 
     if doctor is None:
@@ -29,6 +29,14 @@ def get_subscription_by_id(db: Session, sub_id: int):
 
 
 def get_subscriptions_by_user(db: Session, user_id: int):
+    user = user_repo.get_by_id(db, user_id)
+
+    if user is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"User not found."
+        )
+
     return subscribed_repo.get_by_user(db, user_id)
 
 

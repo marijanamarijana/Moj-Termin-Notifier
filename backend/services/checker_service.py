@@ -10,14 +10,14 @@ def check_new_dates(db: Session, doctor_id: int, user_email: str):
     r = requests.get(url)
 
     if r.status_code != 200:
-        raise HTTPException(detail="Doctor not found or API blocked!")
+        raise HTTPException(status_code=404, detail="Doctor not found or API blocked!")
 
     doctor_data = r.json()
     old_slots = timeslot_service.get_timeslots_by_doctor(db, doctor_id)
     old_dates = {slot.free_slot for slot in old_slots}
     new_dates = timeslot_service.get_timeslots_from_api(doctor_data["timeslots"])
 
-    now = datetime.utcnow()
+    now = datetime.now()
 
     for old_slot in old_slots:
         if old_slot.free_slot < now or old_slot.free_slot not in new_dates:

@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from starlette.responses import JSONResponse
 from model.models import User
@@ -40,15 +40,15 @@ def register(user: UserCreate, db: Session = Depends(get_db)):
 def get_user_by_id(user_id: int, db: Session = Depends(get_db)):
     user = user_service.get_user_by_id(db, user_id)
     if not user:
-        raise HTTPException(detail="User not found")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
     return user
 
 
-@router.get("/email/{user_id}")
+@router.get("/email/{user_email}")
 def get_user_by_email(user_email: str, db: Session = Depends(get_db)):
     user = user_service.get_user_by_email(db, user_email)
     if not user:
-        raise HTTPException(detail="User not found")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
     return user
 
 
@@ -56,5 +56,5 @@ def get_user_by_email(user_email: str, db: Session = Depends(get_db)):
 def delete_user(user_id: int, db: Session = Depends(get_db)):
     success = user_service.delete_user(db, user_id)
     if not success:
-        raise HTTPException(detail="User not found")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
     return {"detail": "User deleted"}

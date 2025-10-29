@@ -9,7 +9,6 @@ from unittest.mock import patch
 pwd_context = CryptContext(schemes=["argon2"], deprecated="auto")
 
 
-# smeni i maybe testovite so jwt u security ?
 @pytest.fixture
 def sample_user_data():
     return UserCreate(
@@ -40,39 +39,41 @@ def test_register_user_duplicate_fails(db_session, sample_user_data):
 
 
 @patch("services.user_service.create_access_token")
-def test_login_user_success(mock_token, db_session):
+def test_login_user_success(mock_token, db_session, sample_user_data):
     mock_token.return_value = "mocked.jwt.token"
 
-    hashed_pwd = pwd_context.hash("secret123")
-    user = User(email="user@mail.com", username="user1", password=hashed_pwd)
-    db_session.add(user)
+    hashed_pwd = pwd_context.hash(sample_user_data.password)
+    db_session.add(User(email=sample_user_data.email, username=sample_user_data.username, password=hashed_pwd))
     db_session.commit()
 
-    result = user_service.login_user(db_session, "user1", "secret123")
+    result = user_service.login_user(db_session, sample_user_data.username, sample_user_data.password)
 
     assert result["access_token"] == "mocked.jwt.token"
     assert result["token_type"] == "bearer"
-    assert result["user"]["username"] == "user1"
+    assert result["user"]["username"] == sample_user_data.username
 
 
 def test_login_user_invalid_username(db_session):
     with pytest.raises(HTTPException) as exc:
-        user_service.login_user(db_session, "notfound", "password")
+        user_service.login_user(db_session, "not_found", "password")
 
     assert exc.value.status_code == 401
     assert "Invalid credentials" in exc.value.detail
 
 
-def test_login_user_invalid_password(db_session):
-    hashed_pwd = pwd_context.hash("correctpass")
-    user = User(email="mail@ex.com", username="userx", password=hashed_pwd)
-    db_session.add(user)
+@patch("services.user_service.create_access_token")
+def test_login_user_invalid_password(mock_token, db_session, sample_user_data):
+    mock_token.return_value = "mocked.jwt.token"
+
+    hashed_pwd = pwd_context.hash(sample_user_data.password)
+    db_session.add(User(email=sample_user_data.email, username=sample_user_data.username, password=hashed_pwd))
     db_session.commit()
 
     with pytest.raises(HTTPException) as exc:
-        user_service.login_user(db_session, "userx", "wrongpass")
+        user_service.login_user(db_session, sample_user_data.username, "wrong_pass")
 
     assert exc.value.status_code == 401
+    assert "Invalid credentials" in exc.value.detail
 
 
 def test_get_user_by_id_existing(db_session, sample_user_data):

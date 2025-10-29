@@ -66,8 +66,11 @@ def test_get_timeslots_by_doctor_no_results(db_session, sample_doctor):
 
 
 def test_get_timeslots_by_doctor_nonexistent(db_session):
-    results = timeslot_service.get_timeslots_by_doctor(db_session, doctor_id=999)
-    assert results == []
+    with pytest.raises(HTTPException) as exc_info:
+        timeslot_service.get_timeslots_by_doctor(db_session, doctor_id=999)
+
+    assert exc_info.value.status_code == 404
+    assert exc_info.value.detail == "Doctor with id 999 not found. Cannot get timeslots!"
 
 
 def test_delete_timeslot_success(db_session, sample_timeslot):

@@ -33,7 +33,7 @@ def test_create_subscription_user_not_found(db_session, sample_doctor):
         subscription_service.create_subscription(db_session, user_id=9999, doctor_id=sample_doctor.id)
 
     assert exc.value.status_code == status.HTTP_404_NOT_FOUND
-    assert "User with id" in exc.value.detail
+    assert "User not found" in exc.value.detail
 
 
 def test_create_subscription_doctor_not_found(db_session, sample_user):
@@ -88,9 +88,11 @@ def test_get_subscriptions_by_user_empty_list(db_session, sample_user):
 
 
 def test_get_all_subscriptions_by_user_nonexistent(db_session):
-    results = subscription_service.get_subscriptions_by_user(db_session, 999)
-    assert results == []
-    assert len(results) == 0
+    with pytest.raises(HTTPException) as exc:
+        subscription_service.get_subscriptions_by_user(db_session, 999)
+
+    assert exc.value.status_code == status.HTTP_404_NOT_FOUND
+    assert "User not found" in exc.value.detail
 
 
 def test_delete_subscription_existing(db_session, sample_user, sample_doctor):

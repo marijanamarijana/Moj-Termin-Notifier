@@ -43,6 +43,3 @@ def test_get_all_doctors_returns_empty_list_when_no_doctors(db_session):
     result = doctor_service.get_all_doctors(db_session)
     assert result == []
     assert len(result) == 0
-
-
-# tests za add doctor ...

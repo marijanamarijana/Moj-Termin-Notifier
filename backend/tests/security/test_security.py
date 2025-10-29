@@ -10,7 +10,7 @@ from jose import jwt
 
 @pytest.fixture
 def sample_user(db_session):
-    user = User(id=1, email="user@example.com", username="user", password="hashed")
+    user = User(email="user@example.com", username="user", password="hashed")
     db_session.add(user)
     db_session.commit()
     return user
@@ -35,6 +35,20 @@ def test_get_current_user_invalid_token(db_session):
     assert "Invalid authentication credentials" in str(exc.value.detail)
 
 
+def test_get_current_user_valid_token_user_nonexistent(db_session, sample_user):
+    token = create_access_token({"sub": sample_user.email})
+    credentials = HTTPAuthorizationCredentials(scheme="Bearer", credentials=token)
+
+    db_session.delete(sample_user)
+    db_session.commit()
+
+    with pytest.raises(HTTPException) as exc:
+        get_current_user(credentials, db_session)
+
+    assert exc.value.status_code == 404
+    assert "User not found" in str(exc.value.detail)
+
+
 def test_get_current_user_user_not_found(db_session):
     token = create_access_token({"sub": "nonexistent@example.com"})
     credentials = HTTPAuthorizationCredentials(scheme="Bearer", credentials=token)
@@ -46,16 +60,16 @@ def test_get_current_user_user_not_found(db_session):
     assert "User not found" in str(exc.value.detail)
 
 
-def test_create_and_verify_valid_token():
-    data = {"sub": "user@example.com", "username": "user", "user_id": 1}
+def test_create_and_verify_valid_token(sample_user):
+    data = {"sub": sample_user.email, "username": sample_user.username, "user_id": sample_user.id}
 
     token = create_access_token(data)
     payload = verify_access_token(token)
 
     assert payload is not None
-    assert payload["sub"] == "user@example.com"
-    assert payload["username"] == "user"
-    assert payload["user_id"] == 1
+    assert payload["sub"] == sample_user.email
+    assert payload["username"] == sample_user.username
+    assert payload["user_id"] == sample_user.id
     assert "exp" in payload
 
 
@@ -66,7 +80,7 @@ def test_verify_invalid_token_returns_none():
     assert result is None
 
 
-def test_verify_expired_token_returns_none(monkeypatch):
+def test_verify_expired_token_returns_none():
     data = {"sub": "user@example.com"}
     expire = datetime.now(timezone.utc) - timedelta(hours=5)
     token = jwt.encode({**data, "exp": expire}, SECRET_KEY, algorithm=ALGORITHM)

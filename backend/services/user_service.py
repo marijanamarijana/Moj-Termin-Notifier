@@ -66,7 +66,8 @@ def get_all_users(db: Session):
     return user_repo.get_all(db)
 
 
-def update_user(db: Session, user_id: int, updates: dict): # add a router method for this
+def update_user(db: Session, user_id: int, updates: dict):
+    # add a router method for this
     user = user_repo.get_by_id(db, user_id)
     if not user:
         return None

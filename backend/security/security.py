@@ -2,7 +2,7 @@ from datetime import datetime, timedelta, timezone
 from jose import JWTError, jwt
 
 # should be env var if it is in production
-SECRET_KEY = "your_super_secret_key_here"
+SECRET_KEY = "super_secret_key"
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 60
 
