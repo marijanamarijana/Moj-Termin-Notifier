@@ -31,7 +31,6 @@ def test_create_timeslot_success(db_session, sample_doctor):
 
 
 def test_create_and_filter_timeslot_success(db_session, sample_doctor):
-    # integration mislam
     free_slot = datetime.now() + timedelta(days=1)
     new_slot = timeslot_service.create_timeslot(db_session, doctor_id=sample_doctor.id, free_slot=free_slot)
 
@@ -41,6 +40,19 @@ def test_create_and_filter_timeslot_success(db_session, sample_doctor):
 
     db_slot = db_session.query(DoctorTimeslot).filter_by(id=new_slot.id).first()
     assert db_slot is not None
+
+
+@pytest.mark.parametrize("invalid_datetimes", [
+    "not-a-datetime",
+    "12-12-12",
+    -90,
+    324,
+    902.12,
+    None
+])
+def test_create_timeslot_invalid_free_slot_type(db_session, sample_doctor, invalid_datetimes):
+    with pytest.raises(Exception):
+        timeslot_service.create_timeslot(db_session, doctor_id=sample_doctor.id, free_slot=invalid_datetimes)
 
 
 def test_create_timeslot_doctor_not_found(db_session):
@@ -119,7 +131,7 @@ def test_graph_slots_available_timeslots():
             {"term": "2025-11-07T08:15:00", "isAvailable": True, "timeslotType": 2},
             {"term": "2025-11-07T08:40:00", "isAvailable": True, "timeslotType": 2},
         ],
-        "2025-12-01": []  # ovoj del ne sum sig deka treba
+        "2025-12-01": []
     }
     expected = {datetime(2025, 11, 7, 8, 15), datetime(2025, 11, 7, 8, 40)}
 

@@ -1,6 +1,5 @@
 import pytest
 from datetime import datetime, timedelta, timezone
-from sqlalchemy.exc import IntegrityError
 from model.models import Doctor, DoctorTimeslot
 from repos import timeslot_repo
 
@@ -87,6 +86,12 @@ def test_delete_timeslot(db_session, sample_doctor):
     assert db_session.query(DoctorTimeslot).filter_by(id=20).count() == 1
     timeslot_repo.delete(db_session, slot)
     assert db_session.query(DoctorTimeslot).filter_by(id=20).count() == 0
+
+
+@pytest.mark.parametrize("invalid", [None, 123, "xx", {}, []])
+def test_delete_invalid_timeslot_objects(db_session, invalid):
+    with pytest.raises(Exception):
+        timeslot_repo.delete(db_session, invalid)
 
 
 def test_two_slots_with_the_same_properties_dont_have_the_same_id(db_session, sample_doctor):

@@ -19,7 +19,6 @@ def test_doctor_model_field():
 
 def test_doctor_timeslot_model_field():
     doctor_timeslot = DoctorTimeslot(free_slot=datetime(2025, 10, 17, 10, 0), doctor_id=960614932)
-    # assert doctor_timeslot.id == 1
     assert doctor_timeslot.free_slot == datetime(2025, 10, 17, 10, 0)
     assert doctor_timeslot.doctor_id == 960614932
 
@@ -83,7 +82,7 @@ def test_user_unique_username_constraint(db_session):
         db_session.commit()
 
 
-def test_user_non_nullable_fields(db_session): # maybe more tests like this
+def test_user_non_nullable_fields(db_session):
     user = User(email=None, username=None, password=None)
     db_session.add(user)
     with pytest.raises(IntegrityError):

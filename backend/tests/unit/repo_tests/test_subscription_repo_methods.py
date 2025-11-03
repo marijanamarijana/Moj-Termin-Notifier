@@ -53,6 +53,15 @@ def test_get_by_id_nonexistent(db_session: Session):
     assert result is None
 
 
+@pytest.mark.parametrize(
+    "invalid_id",
+    [{}, [], (1, 2), ]
+)
+def test_get_by_id_invalid_formats(db_session: Session, invalid_id):
+    with pytest.raises(Exception):
+        subscribed_repo.get_by_id(db_session, invalid_id)
+
+
 def test_get_by_user_multiple_subs(db_session: Session, sample_user, sample_doctor):
     doctor1 = Doctor(id=1096535518, full_name="ВАНЧЕ ТРАЈКОВСКА")
     doctor2 = Doctor(id=879157831, full_name="БОЖИДАР ПОПОСКИ")
@@ -76,3 +85,32 @@ def test_delete_subscription(db_session: Session, sample_subscription):
     subscribed_repo.delete(db_session, sample_subscription)
     result = db_session.query(DoctorSubscription).filter_by(id=sample_subscription.id).first()
     assert result is None
+
+
+@pytest.mark.parametrize(
+    "fake_id",
+    [0, 999, 123456789, -1]  # different invalid IDs
+)
+def test_delete_nonexistent_subscription_by_id(db_session: Session, fake_id):
+    subscription = subscribed_repo.get_by_id(db_session, fake_id)
+    assert subscription is None
+
+    with pytest.raises(Exception):
+        subscribed_repo.delete(db_session, subscription)
+
+
+@pytest.mark.parametrize(
+    "invalid_object",
+    [
+        None,
+        DoctorSubscription(),
+        DoctorSubscription(id=123, user_id=1, doctor_id=222),
+        {"id": 1},
+        object(),
+    ]
+)
+def test_delete_invalid_subscription_objects(db_session: Session, invalid_object):
+    with pytest.raises(Exception):
+        subscribed_repo.delete(db_session, invalid_object)
+
+

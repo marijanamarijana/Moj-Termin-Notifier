@@ -31,7 +31,6 @@ def clean_database():
     Truncate all tables before each test function.
     Keeps schema but removes data so tests don’t leak state.
     """
-    # Run cleanup before each test
     with engine.begin() as connection:
         for table in reversed(Base.metadata.sorted_tables):
             connection.execute(table.delete())
@@ -65,5 +64,8 @@ def client(db_session):
     app.dependency_overrides[get_db] = override_get_db
 
     with TestClient(app) as c:
-        yield c
+        try:
+            yield c
+        finally:
+            app.dependency_overrides.pop(get_db, None)
 

@@ -10,14 +10,36 @@ def test_user_create_valid():
     assert user.password == "secret"
 
 
-def test_user_create_missing_field():
+@pytest.mark.parametrize(
+    "data",
+    [
+        {"username": "username", "password": "12345"},
+        {"email": "user@example.com", "password": "12345"},
+        {"email": "user@example.com", "username": "username"},
+        {},
+    ]
+)
+def test_user_create_missing_fields_parametrized(data):
     with pytest.raises(ValidationError):
-        UserCreate(username="marija", password="secret")
+        UserCreate(**data)
 
 
-def test_user_create_invalid_email():
+@pytest.mark.parametrize(
+    "email",
+    [
+        "not-an-email",
+        "missing-at-symbol.com",
+        "@missing-username.com",
+        "missing-domain@",
+        "a@b",
+        "user@@domain.com",
+        "user@domain..com",
+        "user domain.com",
+    ]
+)
+def test_user_create_invalid_email_parametrized(email):
     with pytest.raises(ValidationError):
-        UserCreate(email="not-an-email", username="marija", password="secret")
+        UserCreate(email=email, username="valid_username", password="secret")
 
 
 def test_login_request_valid():
@@ -26,9 +48,18 @@ def test_login_request_valid():
     assert login.password == "pass123"
 
 
-def test_login_request_missing_field():
+@pytest.mark.parametrize(
+    "data",
+    [
+        {"email": "user@example.com"},
+        {"password": "12345"},
+        {"email": "invalid-email", "password": "123"},
+        {},
+    ]
+)
+def test_login_request_invalid_cases(data):
     with pytest.raises(ValidationError):
-        LoginRequest(email="user@example.com")
+        LoginRequest(**data)
 
 
 def test_doctor_create_with_id():

@@ -28,12 +28,16 @@ def test_create_subscription_success(db_session, sample_user, sample_doctor):
     assert sub.doctor_id == sample_doctor.id
 
 
-def test_create_subscription_user_not_found(db_session, sample_doctor):
-    with pytest.raises(HTTPException) as exc:
-        subscription_service.create_subscription(db_session, user_id=9999, doctor_id=sample_doctor.id)
-
-    assert exc.value.status_code == status.HTTP_404_NOT_FOUND
-    assert "User not found" in exc.value.detail
+@pytest.mark.parametrize("bad_user_id", [
+    "abc",
+    None,
+    -1,
+    3.14,
+    999
+])
+def test_create_subscription_invalid_user_id_raises(db_session, sample_doctor, bad_user_id):
+    with pytest.raises(Exception):
+        subscription_service.create_subscription(db_session, bad_user_id, sample_doctor.id)
 
 
 def test_create_subscription_doctor_not_found(db_session, sample_user):

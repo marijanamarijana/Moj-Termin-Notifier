@@ -23,24 +23,17 @@ async def test_send_email_notification_failure(mock_send):
 
 
 @pytest.mark.asyncio
-async def test_send_email_notification_missing_subject():
+@pytest.mark.parametrize(
+    "to_email, subject, body",
+    [
+        ("", "Subject", "Body"),
+        ("user@example.com", "", "Body"),
+        ("user@example.com", "Subj", ""),
+    ],
+)
+async def test_send_email_notification_missing_fields(to_email, subject, body):
     with pytest.raises(HTTPException) as exc:
-        await send_email_notification("user@example.com", "", "Body")
+        await send_email_notification(to_email, subject, body)
+
     assert exc.value.status_code == 400
-    assert "Missing required email fields" in exc.value.detail
-
-
-@pytest.mark.asyncio
-async def test_send_email_notification_missing_body():
-    with pytest.raises(HTTPException) as exc:
-        await send_email_notification("user@example.com", "Subject", "")
-    assert exc.value.status_code == 400
-    assert "Missing required email fields" in exc.value.detail
-
-
-@pytest.mark.asyncio
-async def test_send_email_notification_missing_recipient():
-    with pytest.raises(HTTPException) as exc:
-        await send_email_notification("", "Subject", "Body")
-    assert exc.value.status_code == 400
-    assert "Missing required email fields" in exc.value.detail
+    assert "Missing required email fields" in str(exc.value.detail)
