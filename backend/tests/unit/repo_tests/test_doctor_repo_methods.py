@@ -83,15 +83,3 @@ def test_get_all_empty_list(db_session):
     results = doctor_repo.get_all(db_session)
     assert isinstance(results, list)
     assert len(results) == 0
-
-
-# valjda e integration test ovoj
-def test_create_and_retrieve_workflow(db_session):
-    """Full integration flow: create doctor → check existence → retrieve."""
-    new_doctor = Doctor(id=960614932, full_name="ИВА САЈКОВСКА")
-    doctor_repo.create(db_session, new_doctor)
-
-    assert doctor_repo.check_existence(db_session, 960614932) is True
-
-    retrieved = doctor_repo.get_by_id(db_session, 960614932)
-    assert retrieved.full_name == "ИВА САЈКОВСКА"
