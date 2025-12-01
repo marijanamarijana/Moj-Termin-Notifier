@@ -24,16 +24,42 @@ def test_add_doctor_success(mock_create, mock_timeslots, mock_get, client, db_se
     assert doctor is not None
 
 
+@pytest.mark.parametrize("doctor_ids", [
+    0,
+    999,
+    -1,
+    "960614932",
+    3000000000
+])
 @patch("services.doctor_service.requests.get")
-def test_add_doctor_api_not_found_404(mock_get, client):
+def test_add_doctor_api_not_found_404(mock_get, client, doctor_ids):
     mock_response = MagicMock(status_code=404)
     mock_get.return_value = mock_response
 
-    payload = {"doctor_id": 999}
+    payload = {"doctor_id": doctor_ids}
     response = client.post("/api/doctors/add", json=payload)
 
     assert response.status_code == status.HTTP_404_NOT_FOUND
     assert response.json()["detail"] == "Doctor not found or API blocked"
+
+
+@pytest.mark.parametrize("invalid_doctor_ids", [
+    None,
+    " ",
+    "bla_blas",
+    {},
+    [],
+    6363.23,
+])
+@patch("services.doctor_service.requests.get")
+def test_add_doctor_api_code_422(mock_get, client, invalid_doctor_ids):
+    mock_response = MagicMock(status_code=404)
+    mock_get.return_value = mock_response
+
+    payload = {"doctor_id": invalid_doctor_ids}
+    response = client.post("/api/doctors/add", json=payload)
+
+    assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
 
 
 @patch("services.doctor_service.requests.get")
