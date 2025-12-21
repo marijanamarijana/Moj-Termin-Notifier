@@ -41,6 +41,26 @@ describe("timeslotRepository", () => {
     expect(response.data).toEqual(mockData);
   });
 
-    // the user can't try to get timeslots for a doctor who doesn't exist
+    it("handles server error", async () => {
+  mock.onGet("/timeslots/doctor/3783958400").reply(500);
+
+  await expect(
+    timeslotRepository.getByDoctor(3783958400)
+  ).rejects.toMatchObject({
+    response: { status: 500 },
+  });
+});
+
+    it("returns 400 for invalid doctor id", async () => {
+  mock.onGet("/timeslots/doctor/abc").reply(400);
+
+  await expect(
+    timeslotRepository.getByDoctor("abc")
+  ).rejects.toMatchObject({
+    response: { status: 400 },
+  });
+});
+
+
 
 });

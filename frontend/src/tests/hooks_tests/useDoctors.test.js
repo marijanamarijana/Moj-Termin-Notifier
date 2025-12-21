@@ -1,51 +1,64 @@
-import { renderHook, waitFor } from "@testing-library/react";
+import { renderHook, act, waitFor } from "@testing-library/react";
 import useDoctors from "../../hooks/useDoctors";
 import doctorRepository from "../../repository/doctorRepository";
 
-vi.mock("../../repository/doctorRepository");
+vi.mock("../../repository/doctorRepository", () => ({
+  default: {
+    findAll: vi.fn(),
+    add: vi.fn(),
+  },
+}));
 
 describe("useDoctors", () => {
-  it("loads and returns all doctors", async () => {
-    const mockDoctors = [{
-          "full_name": "БОЖИДАР ПОПОСКИ",
-          "id": 879157831
-        },
-        {
-          "full_name": "Марјан Балоски",
-          "id": 891281366
-        }];
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
 
-    doctorRepository.findAll.mockResolvedValueOnce({ data: mockDoctors });
+  it("fetches doctors on mount", async () => {
+    const doctors = [
+     { full_name: "БОЖИДАР ПОПОСКИ", id: 879157831 },
+        { full_name: "Марјан Балоски", id: 891281366 },
+    ];
+
+    doctorRepository.findAll.mockResolvedValue({ data: doctors });
 
     const { result } = renderHook(() => useDoctors());
 
     expect(result.current.loading).toBe(true);
+    expect(result.current.doctors).toEqual([]);
 
-    await waitFor(() => expect(result.current.loading).toBe(false));
-    expect(result.current.doctors).toEqual(mockDoctors);
+    await waitFor(() => {
+      expect(result.current.loading).toBe(false);
+      expect(result.current.doctors).toEqual(doctors);
+    });
+
+    expect(doctorRepository.findAll).toHaveBeenCalledTimes(1);
   });
 
-  it("adds a doctor and reloads list", async () => {
-    const mockDoctors = [{
-          "full_name": "БОЖИДАР ПОПОСКИ",
-          "id": 879157831
-        },
-        {
-          "full_name": "Марјан Балоски",
-          "id": 891281366
-        }];
+  it("adds a new doctor and refetches doctors", async () => {
+    const doctorsBefore = [{ full_name: "БОЖИДАР ПОПОСКИ", id: 879157831 }];
+    const doctorsAfter = [
+      { full_name: "БОЖИДАР ПОПОСКИ", id: 879157831 },
+        { full_name: "Марјан Балоски", id: 891281366 },
+    ];
 
-    doctorRepository.add.mockResolvedValueOnce({});
-    doctorRepository.findAll.mockResolvedValueOnce({ data: mockDoctors });
+    doctorRepository.findAll
+      .mockResolvedValueOnce({ data: doctorsBefore })
+      .mockResolvedValueOnce({ data: doctorsAfter });
+
+    doctorRepository.add.mockResolvedValue({});
 
     const { result } = renderHook(() => useDoctors());
-    await waitFor(() => expect(result.current.loading).toBe(false));
 
-    await result.current.onAdd({
-    "full_name": "БИЛЈАНА САВИН ИВАНОВСКА",
-    "id": 1376904131
-  });
-    expect(doctorRepository.add).toHaveBeenCalled();
+    await waitFor(() => expect(result.current.doctors).toEqual(doctorsBefore));
+
+    await act(async () => {
+      await result.current.onAdd({ doctor_id: 891281366 });
+    });
+
+    await waitFor(() => expect(result.current.doctors).toEqual(doctorsAfter));
+
+    expect(doctorRepository.add).toHaveBeenCalledWith({ doctor_id: 891281366 });
     expect(doctorRepository.findAll).toHaveBeenCalledTimes(2);
   });
 });

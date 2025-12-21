@@ -23,8 +23,8 @@ describe("subscriptionRepository", () => {
 
     const response = await subscriptionRepository.subscribe(1096535518);
 
-    expect(response.status).toBe(200);
-    expect(response.data.success).toBe(true);
+  expect(response.status).toBe(200);
+  expect(response.data).toEqual(responseData);
   });
 
   it("gets subscriptions by user", async () => {
@@ -61,8 +61,13 @@ describe("subscriptionRepository", () => {
     expect(response.data).toEqual(mockData);
   });
 
-   // we can't even access the button to see subscriptions if you are
-    // not logged in so we do not make a test case for that
+   it("handles network error on subscribe", async () => {
+  mock.onPost("/subscriptions/subscribe/1096535518").networkError();
+
+  await expect(
+    subscriptionRepository.subscribe(1096535518)
+  ).rejects.toBeDefined();
+});
 
   it("unsubscribes from a doctor", async () => {
     mock.onDelete("/subscriptions/unsubscribe/17").reply(200, {message: "Subscription deleted"});
@@ -72,6 +77,15 @@ describe("subscriptionRepository", () => {
     expect(response.status).toBe(200);
   });
 
-  // also can't unsubscribe if you are not subscribed already
+  it("fails to unsubscribe non-existent subscription", async () => {
+  mock.onDelete("/subscriptions/unsubscribe/999").reply(404);
+
+  await expect(
+    subscriptionRepository.unsubscribe(999)
+  ).rejects.toMatchObject({
+    response: { status: 404 },
+  });
+});
+
 });
 
