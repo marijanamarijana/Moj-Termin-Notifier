@@ -4,12 +4,18 @@ import LoginForm from "../../components/auth/LoginForm";
 function LoginPage() {
   const [user, setUser] = useState(null);
 
-  useEffect(() => {
-    const savedUser = localStorage.getItem("user");
-    if (savedUser) {
+useEffect(() => {
+  const savedUser = localStorage.getItem("user");
+  if (savedUser) {
+    try {
       setUser(JSON.parse(savedUser));
+    } catch {
+      localStorage.removeItem("user");
+      setUser(null);
     }
-  }, []);
+  }
+}, []);
+
 
   const handleLogout = () => {
     localStorage.removeItem("token");
