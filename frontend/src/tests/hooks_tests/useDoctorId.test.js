@@ -8,46 +8,92 @@ vi.mock("../../repository/doctorRepository", () => ({
   },
 }));
 
-describe("useDoctorId", () => {
+const doctor1 = {
+  id: 1096535518,
+  full_name: "ВАНЧЕ ТРАЈКОВСКА",
+};
+
+const doctor2 = {
+  id: 879157831,
+  full_name: "БОЖИДАР ПОПОСКИ",
+};
+
+describe("useDoctorId hook", () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
 
-  it("fetches doctor by id and sets state", async () => {
-    const mockDoctor = {
-        full_name: "ВАНЧЕ ТРАЈКОВСКА",
-        id: 1096535518 };
-    doctorRepository.findById.mockResolvedValue({ data: mockDoctor });
+  it("calls findById once on initial render", async () => {
+    doctorRepository.findById.mockResolvedValue({ data: doctor1 });
 
-    const { result } = renderHook(() => useDoctorId(1096535518));
+    renderHook(() => useDoctorId(doctor1.id));
 
     await waitFor(() => {
-      expect(result.current).toEqual(mockDoctor);
+      expect(doctorRepository.findById).toHaveBeenCalledTimes(1);
     });
 
-    expect(doctorRepository.findById).toHaveBeenCalledWith(1096535518);
+    expect(doctorRepository.findById).toHaveBeenCalledWith(doctor1.id);
   });
 
-  it("updates when id changes", async () => {
-    const doctor1 = {full_name: "ВАНЧЕ ТРАЈКОВСКА", id: 1096535518 };
-    const doctor2 =  { full_name: "БОЖИДАР ПОПОСКИ", id: 879157831 };
+  it("fetches doctor by id and sets state", async () => {
+    doctorRepository.findById.mockResolvedValue({ data: doctor1 });
 
+    const { result } = renderHook(() => useDoctorId(doctor1.id));
+
+    await waitFor(() => {
+      expect(result.current).toEqual(doctor1);
+    });
+  });
+
+  it("updates state when id changes", async () => {
+    doctorRepository.findById
+      .mockResolvedValueOnce({ data: doctor1 })
+      .mockResolvedValueOnce({ data: doctor2 });
+
+    const { result, rerender} = renderHook(
+      ({ id }) => useDoctorId(id),
+      { initialProps: { id: doctor1.id } }
+    );
+
+    await waitFor(() => {
+      expect(result.current).toEqual(doctor1);
+          });
+
+    rerender({ id: doctor2.id });
+
+    await waitFor(() => {
+      expect(result.current).toEqual(doctor2);
+    });
+
+    expect(doctorRepository.findById).toHaveBeenCalledTimes(2);
+    expect(doctorRepository.findById)
+      .toHaveBeenLastCalledWith(doctor2.id);
+  });
+
+    it("calls repository even when id is undefined", async () => {
+    doctorRepository.findById.mockResolvedValue({ data: {} });
+
+    renderHook(() => useDoctorId(undefined));
+
+    await waitFor(() => {
+      expect(doctorRepository.findById).toHaveBeenCalledWith(undefined);
+    });
+  });
+
+  it("handles rapid id changes correctly", async () => {
     doctorRepository.findById
       .mockResolvedValueOnce({ data: doctor1 })
       .mockResolvedValueOnce({ data: doctor2 });
 
     const { result, rerender } = renderHook(
       ({ id }) => useDoctorId(id),
-      { initialProps: { id: 1096535518 } }
+      { initialProps: { id: doctor1.id } }
     );
 
-    await waitFor(() => expect(result.current).toEqual(doctor1));
+    rerender({ id: doctor2.id });
 
-    rerender({ id: 879157831 });
-
-    await waitFor(() => expect(result.current).toEqual(doctor2));
-
-    expect(doctorRepository.findById).toHaveBeenCalledTimes(2);
-    expect(doctorRepository.findById).toHaveBeenCalledWith(879157831);
+    await waitFor(() => {
+      expect(result.current).toEqual(doctor2);
+    });
   });
 });
