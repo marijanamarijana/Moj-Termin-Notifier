@@ -18,7 +18,7 @@ const doctor2 = {
   full_name: "БОЖИДАР ПОПОСКИ",
 };
 
-describe("useDoctorId hook", () => {
+describe("useDoctorId hook tests", () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
@@ -78,7 +78,17 @@ describe("useDoctorId hook", () => {
     await waitFor(() => {
       expect(doctorRepository.findById).toHaveBeenCalledWith(undefined);
     });
-  });
+    });
+
+    it("calls repository even when id is null", async () => {
+    doctorRepository.findById.mockResolvedValue({ data: {} });
+
+    renderHook(() => useDoctorId(null));
+
+    await waitFor(() => {
+      expect(doctorRepository.findById).toHaveBeenCalledWith(null);
+    });
+    });
 
   it("handles rapid id changes correctly", async () => {
     doctorRepository.findById

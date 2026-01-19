@@ -19,7 +19,7 @@ const doctor2 = {
   full_name: "БОЖИДАР ПОПОСКИ",
 };
 
-describe("useDoctors", () => {
+describe("useDoctors hook tests", () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
@@ -34,7 +34,7 @@ describe("useDoctors", () => {
     expect(typeof result.current.onAdd).toBe("function");
   });
 
-  it("fetches doctors on mount", async () => {
+  it("fetches doctors and updates state", async () => {
       doctorRepository.findAll.mockResolvedValue({
       data: [doctor1, doctor2],
     });
