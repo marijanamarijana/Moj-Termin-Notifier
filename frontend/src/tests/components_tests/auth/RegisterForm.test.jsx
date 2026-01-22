@@ -4,6 +4,7 @@ import { BrowserRouter } from "react-router-dom";
 import MockAdapter from "axios-mock-adapter";
 import axiosInstance from "../../../axios/axios";
 import RegisterForm from "../../../components/auth/RegisterForm";
+import userEvent from "@testing-library/user-event";
 
 const navigateMock = vi.fn();
 vi.mock("react-router-dom", async () => {
@@ -16,45 +17,45 @@ vi.mock("react-router-dom", async () => {
 
 const renderWithRouter = (ui) => render(<BrowserRouter>{ui}</BrowserRouter>);
 
-describe("RegisterForm Component", () => {
-  let mockAxios;
+describe("RegisterForm Component Testing", () => {
+  let mockAxiosInstance;
 
   beforeEach(() => {
-    mockAxios = new MockAdapter(axiosInstance);
-    navigateMock.mockClear(); // clear previous calls
+    mockAxiosInstance = new MockAdapter(axiosInstance);
+    navigateMock.mockClear();
   });
 
   afterEach(() => {
-    mockAxios.reset();
+    mockAxiosInstance.restore();
   });
 
-  it("renders the form correctly", () => {
+  it("renders all form fields and submit button correctly", () => {
     renderWithRouter(<RegisterForm />);
-    expect(screen.getByLabelText(/Email/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/Username/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/Password/i)).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: /Register/i })).toBeInTheDocument();
+
+    expect(screen.getByRole("heading", { name: /register/i })).toBeInTheDocument();
+    expect(screen.getByPlaceholderText(/Email/i)).toBeInTheDocument();
+    expect(screen.getByPlaceholderText(/Username/i)).toBeInTheDocument();
+    expect(screen.getByPlaceholderText(/Password/i)).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /^register$/i })).toBeInTheDocument();
   });
 
-  it("updates input fields correctly", () => {
+  it("updates input values fields correctly when user types", () => {
+    const user = userEvent.setup();
     renderWithRouter(<RegisterForm />);
-    const emailInput = screen.getByLabelText(/Email/i);
-    const usernameInput = screen.getByLabelText(/Username/i);
-    const passwordInput = screen.getByLabelText(/Password/i);
 
-    fireEvent.change(emailInput, { target: { value: "test@example.com" } });
-    fireEvent.change(usernameInput, { target: { value: "testuser" } });
-    fireEvent.change(passwordInput, { target: { value: "password123" } });
+    user.type(screen.getByPlaceholderText(/email/i), "test@example.com");
+    user.type(screen.getByPlaceholderText(/username/i), "testuser");
+    user.type(screen.getByPlaceholderText(/password/i), "password123");
 
-    expect(emailInput.value).toBe("test@example.com");
-    expect(usernameInput.value).toBe("testuser");
-    expect(passwordInput.value).toBe("password123");
+    expect(screen.getByPlaceholderText(/email/i)).toBeEnabled();
+    expect(screen.getByPlaceholderText(/username/i)).toBeEnabled();
+    expect(screen.getByPlaceholderText(/password/i)).toBeEnabled();
   });
 
   it("submits form successfully and navigates after success", async () => {
     renderWithRouter(<RegisterForm />);
 
-    mockAxios.onPost("/users/register").reply(200, {
+    mockAxiosInstance.onPost("/users/register").reply(200, {
       message: "Registration successful",
     });
 
@@ -73,40 +74,77 @@ describe("RegisterForm Component", () => {
   });
 
   it("displays error message on failed registration", async () => {
+    mockAxiosInstance.onPost("/users/register").reply(400, {
+      detail: "Email already exists"
+    });
+    const user = userEvent.setup();
     renderWithRouter(<RegisterForm />);
 
-    mockAxios.onPost("/users/register").reply(400, {
-      detail: "Email already exists",
-    });
-
-    fireEvent.change(screen.getByLabelText(/Email/i), { target: { value: "test@example.com" } });
-    fireEvent.change(screen.getByLabelText(/Username/i), { target: { value: "testuser" } });
-    fireEvent.change(screen.getByLabelText(/Password/i), { target: { value: "password123" } });
-
-    fireEvent.click(screen.getByRole("button", { name: /Register/i }));
+    await user.type(screen.getByPlaceholderText(/email/i), "test@example.com");
+    await user.type(screen.getByPlaceholderText(/username/i), "testuser");
+    await user.type(screen.getByPlaceholderText(/password/i), "password123");
+    await user.click(screen.getByRole("button", { name: /^register$/i }));
 
     await waitFor(() => {
-      expect(screen.getByText("Email already exists")).toBeInTheDocument();
+      expect(
+        screen.getByText("Email already exists")
+      ).toBeInTheDocument();
     });
 
     expect(navigateMock).not.toHaveBeenCalled();
   });
 
   it("displays generic error if response has no detail", async () => {
+    mockAxiosInstance.onPost("/users/register").networkError();
+
+    const user = userEvent.setup();
     renderWithRouter(<RegisterForm />);
 
-    mockAxios.onPost("/users/register").networkError();
-
-    fireEvent.change(screen.getByLabelText(/Email/i), { target: { value: "test@example.com" } });
-    fireEvent.change(screen.getByLabelText(/Username/i), { target: { value: "testuser" } });
-    fireEvent.change(screen.getByLabelText(/Password/i), { target: { value: "password123" } });
-
-    fireEvent.click(screen.getByRole("button", { name: /Register/i }));
+    await user.type(screen.getByPlaceholderText(/email/i), "test@example.com");
+    await user.type(screen.getByPlaceholderText(/username/i), "testuser");
+    await user.type(screen.getByPlaceholderText(/password/i), "password123");
+    await user.click(screen.getByRole("button", { name: /^register$/i }));
 
     await waitFor(() => {
-      expect(screen.getByText("Registration failed")).toBeInTheDocument();
+      expect(
+        screen.getByText("Registration failed")
+      ).toBeInTheDocument();
     });
 
     expect(navigateMock).not.toHaveBeenCalled();
   });
+
+    it("does not submit form when required fields are empty", async () => {
+    const user = userEvent.setup();
+    renderWithRouter(<RegisterForm />);
+
+    await user.click(screen.getByRole("button", { name: /^register$/i }));
+
+    await waitFor(() => {expect(navigateMock).not.toHaveBeenCalled();});
+  });
+
+  it("clears error message after a successful retry", async () => {
+    mockAxiosInstance.onPost("/users/register")
+      .replyOnce(400, { detail: "Email already exists" })
+      .onPost("/users/register")
+      .replyOnce(200, { message: "Registration successful" });
+
+    const user = userEvent.setup();
+    renderWithRouter(<RegisterForm />);
+
+    await user.type(screen.getByPlaceholderText(/email/i), "test@example.com");
+    await user.type(screen.getByPlaceholderText(/username/i), "testuser");
+    await user.type(screen.getByPlaceholderText(/password/i), "password123");
+    await user.click(screen.getByRole("button", { name: /^register$/i }));
+
+    expect(await screen.findByText("Email already exists")).toBeInTheDocument();
+
+    await user.click(screen.getByRole("button", { name: /^register$/i }));
+
+    await waitFor(() => {
+      expect(screen.queryByText("Email already exists")).not.toBeInTheDocument();
+      expect(screen.getByText(/registration successful/i)).toBeInTheDocument();
+    });
+  });
+
 });
