@@ -13,57 +13,74 @@ vi.mock("../../../hooks/useAuth.js", () => ({
 const renderWithRouter = (ui) =>
   render(<BrowserRouter>{ui}</BrowserRouter>);
 
-describe("Navbar Component", () => {
+describe("Navbar Component Testing", () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
 
   it("renders app title", () => {
-    mockUseAuth.mockReturnValue({ user: null });
+      mockUseAuth.mockReturnValue({user: null});
 
-    renderWithRouter(<Navbar />);
-    expect(
-      screen.getByText("Moj Termin Subscriber App")
-    ).toBeInTheDocument();
+      renderWithRouter(<Navbar/>);
+      const titleLink = screen.getByRole("link", {name: "Moj Termin Subscriber App",});
+
+      expect(titleLink).toBeInTheDocument();
+      expect(titleLink).toHaveAttribute("href", "/");
   });
 
-  it("shows Login and Register links when user is not logged in", () => {
-    mockUseAuth.mockReturnValue({ user: null });
+  describe("user is not authenticated (not logged in)", () => {
+    it("shows Login and Register links", () => {
+      mockUseAuth.mockReturnValue({user: null});
 
-    renderWithRouter(<Navbar />);
+      renderWithRouter(<Navbar/>);
 
-    expect(screen.getByText("Login")).toBeInTheDocument();
-    expect(screen.getByText("Register")).toBeInTheDocument();
-    expect(screen.queryByText("Logout")).not.toBeInTheDocument();
-    expect(screen.queryByText(/Hi,/)).not.toBeInTheDocument();
-  });
+      expect(screen.getByText("Login")).toBeInTheDocument();
+      expect(screen.getByText("Register")).toBeInTheDocument();
 
-  it("shows username, Logout, and My Subscriptions when user is logged in", () => {
-    mockUseAuth.mockReturnValue({
-      user: { username: "marijana" },
-      handleLogout: vi.fn(),
+      expect(screen.queryByText("Logout")).not.toBeInTheDocument();
+      expect(screen.queryByText(/Hi,/)).not.toBeInTheDocument();
+      expect(screen.queryByText("My Subscriptions")).not.toBeInTheDocument();
     });
 
-    renderWithRouter(<Navbar />);
+    it("Login and Register links point to correct routes", () => {
+      mockUseAuth.mockReturnValue({user: null});
 
-    expect(screen.getByText("Hi, marijana!")).toBeInTheDocument();
-    expect(screen.getByText("Logout")).toBeInTheDocument();
-    expect(screen.getByText("My Subscriptions")).toBeInTheDocument();
-    expect(screen.queryByText("Login")).not.toBeInTheDocument();
-    expect(screen.queryByText("Register")).not.toBeInTheDocument();
+      renderWithRouter(<Navbar/>);
+
+      expect(screen.getByRole("link", {name: "Login"})).toHaveAttribute("href", "/login");
+      expect(screen.getByRole("link", {name: "Register"})).toHaveAttribute("href", "/register");
+    });
   });
 
-  it("calls handleLogout when Logout button is clicked", () => {
-    const handleLogout = vi.fn();
+  describe("user is authenticated (logged in)", () => {
+    it("shows username, Logout, and My Subscriptions", () => {
+      mockUseAuth.mockReturnValue({
+        user: { username: "marijana" },
+        handleLogout: vi.fn(),
+      });
 
-    mockUseAuth.mockReturnValue({
-      user: { username: "marijana" },
-      handleLogout,
+      renderWithRouter(<Navbar />);
+
+      expect(screen.getByText("Hi, marijana!")).toBeInTheDocument();
+      expect(screen.getByText("Logout")).toBeInTheDocument();
+      expect(screen.getByText("My Subscriptions")).toBeInTheDocument();
+
+      expect(screen.queryByText("Login")).not.toBeInTheDocument();
+      expect(screen.queryByText("Register")).not.toBeInTheDocument();
     });
 
-    renderWithRouter(<Navbar />);
+    it("calls handleLogout when Logout button is clicked", () => {
+      const handleLogout = vi.fn();
 
-    fireEvent.click(screen.getByText("Logout"));
-    expect(handleLogout).toHaveBeenCalledTimes(1);
+      mockUseAuth.mockReturnValue({
+        user: { username: "marijana" },
+        handleLogout,
+      });
+
+      renderWithRouter(<Navbar />);
+
+      fireEvent.click(screen.getByText("Logout"));
+      expect(handleLogout).toHaveBeenCalledTimes(1);
+    });
   });
 });

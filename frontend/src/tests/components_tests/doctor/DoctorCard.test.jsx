@@ -17,7 +17,7 @@ vi.mock("../../../hooks/useUserSubscription", () => ({
 
 const renderWithRouter = (ui) => render(<BrowserRouter>{ui}</BrowserRouter>);
 
-describe("DoctorCard Component", () => {
+describe("DoctorCard Component Testing", () => {
   const doctor = { id: 1, full_name: "Dr. John Doe" };
 
   beforeEach(() => {
@@ -36,6 +36,24 @@ describe("DoctorCard Component", () => {
     renderWithRouter(<DoctorCard doctor={doctor} />);
     expect(screen.getByText("Dr. John Doe")).toBeInTheDocument();
     expect(screen.getByRole("link", { name: /See Available Dates/i })).toBeInTheDocument();
+  });
+
+    it("does NOT render Subscribe/Unsubscribe buttons when user is not logged in", () => {
+    mockUseAuth.mockReturnValue({ user: null });
+    mockUseUserSubscriptions.mockReturnValue({
+      subscriptions: [],
+      addSubscription: vi.fn(),
+      removeSubscription: vi.fn(),
+      loading: false,
+    });
+
+    expect(
+      screen.queryByRole("button", { name: /subscribe/i })
+    ).not.toBeInTheDocument();
+
+    expect(
+      screen.queryByRole("button", { name: /unsubscribe/i })
+    ).not.toBeInTheDocument();
   });
 
   it("renders Subscribe button if user is not subscribed", () => {
@@ -76,7 +94,7 @@ describe("DoctorCard Component", () => {
     expect(removeSubscription).toHaveBeenCalledWith(doctor.id);
   });
 
-  it("disables buttons when loading is true", () => {
+  it("disables Subscribe button when loading is true", () => {
     mockUseAuth.mockReturnValue({ user: { id: 1 } });
     mockUseUserSubscriptions.mockReturnValue({
       subscriptions: [],
