@@ -10,8 +10,9 @@ function DoctorSlots() {
   console.log(doc)
 
   const formatDatetimeWithWeekday = (isoString) => {
-    return format(new Date(isoString), "EEEE, dd/MM/yyyy HH:mm");
-  };
+  const date = new Date(isoString);
+  if (isNaN(date)) return "Invalid date";
+  return format(date, "EEEE, dd/MM/yyyy HH:mm");  };
 
   return (
     <div className="container mt-4">
