@@ -12,8 +12,8 @@ def test_user_model_field():
 
 
 def test_doctor_model_field():
-    doctor = Doctor(id=960614932, full_name="ИВА САЈКОВСКА")
-    assert doctor.full_name == "ИВА САЈКОВСКА"
+    doctor = Doctor(id=960614932, full_name="doctor iva")
+    assert doctor.full_name == "doctor iva"
     assert doctor.id == 960614932
 
 
@@ -30,19 +30,19 @@ def test_doctor_subscription_model_field():
 
 
 def test_doctor_timeslot_relationship():
-    doctor = Doctor(id=960614932, full_name="ИВА САЈКОВСКА")
+    doctor = Doctor(id=960614932, full_name="doctor iva")
     slot = DoctorTimeslot(free_slot=datetime(2025, 10, 17, 10, 0), doctor=doctor)
-    assert slot.doctor.full_name == "ИВА САЈКОВСКА"
+    assert slot.doctor.full_name == "doctor iva"
     assert slot.doctor_id is None
 
 
 def test_doctor_subscription_relationships():
     user = User(email="john@example.com", username="john", password="1234")
-    doctor = Doctor(id=960614932, full_name="ИВА САЈКОВСКА")
+    doctor = Doctor(id=960614932, full_name="doctor iva")
     sub = DoctorSubscription(user=user, doctor=doctor)
 
     assert sub.user.username == "john"
-    assert sub.doctor.full_name == "ИВА САЈКОВСКА"
+    assert sub.doctor.full_name == "doctor iva"
     assert len(user.subscriptions) == 1
     assert user.subscriptions[0] == sub
 
@@ -124,12 +124,12 @@ def test_user_delete(db_session):
 
 
 def test_doctor_saved_fields(db_session):
-    doctor = Doctor(id=960614932, full_name="ИВА САЈКОВСКА")
+    doctor = Doctor(id=960614932, full_name="doctor iva")
     db_session.add(doctor)
     db_session.commit()
 
     saved = db_session.query(Doctor).first()
-    assert saved.full_name == "ИВА САЈКОВСКА"
+    assert saved.full_name == "doctor iva"
     assert saved.id == 960614932
 
 
@@ -141,17 +141,17 @@ def test_doctor_non_nullable_fields(db_session):
 
 
 def test_doctor_filter_by_field(db_session):
-    doctor = Doctor(id=960614932, full_name="ИВА САЈКОВСКА")
+    doctor = Doctor(id=960614932, full_name="doctor iva")
     db_session.add(doctor)
     db_session.commit()
 
     saved_user = db_session.query(Doctor).filter_by(id=960614932).first()
     assert saved_user is not None
-    assert saved_user.full_name == "ИВА САЈКОВСКА"
+    assert saved_user.full_name == "doctor iva"
 
 
 def test_doctor_timeslot_saved_fields(db_session):
-    doctor = Doctor(id=960614932, full_name="ИВА САЈКОВСКА")
+    doctor = Doctor(id=960614932, full_name="doctor iva")
     db_session.add(doctor)
     db_session.commit()
 
@@ -165,7 +165,7 @@ def test_doctor_timeslot_saved_fields(db_session):
 
 
 def test_doctor_timeslot_non_nullable_fields(db_session):
-    doctor = Doctor(id=960614932, full_name="ИВА САЈКОВСКА")
+    doctor = Doctor(id=960614932, full_name="doctor iva")
     db_session.add(doctor)
     db_session.commit()
 
@@ -176,7 +176,7 @@ def test_doctor_timeslot_non_nullable_fields(db_session):
 
 
 def test_doctor_timeslot_filter_by_field(db_session):
-    doctor = Doctor(id=960614932, full_name="ИВА САЈКОВСКА")
+    doctor = Doctor(id=960614932, full_name="doctor iva")
     db_session.add(doctor)
     db_session.commit()
 
@@ -190,7 +190,7 @@ def test_doctor_timeslot_filter_by_field(db_session):
 
 
 def test_doctor_timeslot_backref(db_session):
-    doctor = Doctor(id=960614932, full_name="ИВА САЈКОВСКА")
+    doctor = Doctor(id=960614932, full_name="doctor iva")
     db_session.add(doctor)
     db_session.commit()
 
@@ -207,7 +207,7 @@ def test_doctor_timeslot_backref(db_session):
 
 def test_doctor_subscription_saved_fields(db_session):
     user = User(email="john@example.com", username="john", password="1234")
-    doctor = Doctor(id=960614932, full_name="ИВА САЈКОВСКА")
+    doctor = Doctor(id=960614932, full_name="doctor iva")
     db_session.add_all([user, doctor])
     db_session.commit()
 
@@ -222,7 +222,7 @@ def test_doctor_subscription_saved_fields(db_session):
 
 def test_doctor_subscription_filter_by_field(db_session):
     user = User(email="john@example.com", username="john", password="1234")
-    doctor = Doctor(id=960614932, full_name="ИВА САЈКОВСКА")
+    doctor = Doctor(id=960614932, full_name="doctor iva")
     db_session.add_all([user, doctor])
     db_session.commit()
 
@@ -237,7 +237,7 @@ def test_doctor_subscription_filter_by_field(db_session):
 
 def test_doctor_subscription_backref(db_session):
     user = User(email="john@example.com", username="john", password="1234")
-    doctor = Doctor(id=960614932, full_name="ИВА САЈКОВСКА")
+    doctor = Doctor(id=960614932, full_name="doctor iva")
     db_session.add_all([user, doctor])
     db_session.commit()
 

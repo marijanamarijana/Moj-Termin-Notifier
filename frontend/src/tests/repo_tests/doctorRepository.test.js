@@ -2,7 +2,7 @@ import MockAdapter from "axios-mock-adapter";
 import axiosInstance from "../../axios/axios";
 import doctorRepository from "../../repository/doctorRepository";
 
-describe("doctorRepository", () => {
+describe("doctorRepository testing", () => {
   let mock;
 
   beforeEach(() => {
@@ -16,8 +16,8 @@ describe("doctorRepository", () => {
   describe("findAll", () => {
     it("returns data for all doctors", async () => {
       const mockData = [
-        { full_name: "БОЖИДАР ПОПОСКИ", id: 879157831 },
-        { full_name: "Марјан Балоски", id: 891281366 },
+        { full_name: "doctor mira", id: 879157831 },
+        { full_name: "doctor marija", id: 891281366 },
       ];
 
       mock.onGet("/doctors/all").reply(200, mockData);
@@ -113,7 +113,7 @@ describe("doctorRepository", () => {
 
     it("handles concurrency: two findById calls simultaneously", async () => {
       const doctor1 = {full_name: "БИЛЈАНА САВИН ИВАНОВСКА", id: 1376904131};
-      const doctor2 = {full_name: "БОЖИДАР ПОПОСКИ", id: 879157831};
+      const doctor2 = {full_name: "doctor mira", id: 879157831};
 
       mock.onGet("/doctors/1376904131").reply(200, doctor1);
       mock.onGet("/doctors/879157831").reply(200, doctor2);
@@ -133,7 +133,7 @@ describe("doctorRepository", () => {
       const payload = { doctor_id: 1096535518 };
 
       mock.onPost("/doctors/add", payload).reply(200, {
-        full_name: "ВАНЧЕ ТРАЈКОВСКА",
+        full_name: "doctor ana",
         id: 1096535518,
       });
 

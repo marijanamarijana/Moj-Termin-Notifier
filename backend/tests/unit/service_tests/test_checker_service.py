@@ -55,7 +55,7 @@ def test_check_new_dates_no_new_slots_returns_true(db_session, mock_requests, mo
         now = datetime.now()
 
         mock_response = MagicMock(status_code=200)
-        mock_response.json.return_value = {"name": "ИВА САЈКОВСКА", "timeslots": []}
+        mock_response.json.return_value = {"name": "doctor iva", "timeslots": []}
         mock_get.return_value = mock_response
 
         slot = DoctorTimeslot(doctor_id=960614932, free_slot=now + timedelta(days=1))
@@ -81,7 +81,7 @@ def test_check_new_dates_with_new_slots_creates_and_sends_email(db_session, mock
 
         mock_response = MagicMock(status_code=200)
         mock_response.json.return_value = {
-            "name": "ИВА САЈКОВСКА",
+            "name": "doctor iva",
             "timeslots": [{"start": "2025-10-30T10:00:00"}]
         }
         mock_get.return_value = mock_response
@@ -107,7 +107,7 @@ def test_check_new_dates_deletes_expired_slots(db_session, mock_requests, mock_t
         now = datetime.now()
 
         mock_response = MagicMock(status_code=200)
-        mock_response.json.return_value = {"name": "ИВА САЈКОВСКА", "timeslots": []}
+        mock_response.json.return_value = {"name": "doctor iva", "timeslots": []}
         mock_get.return_value = mock_response
 
         expired_slot = DoctorTimeslot(id=1, doctor_id=960614932, free_slot=now - timedelta(days=1))

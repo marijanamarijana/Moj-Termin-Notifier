@@ -14,7 +14,7 @@ def sample_user(db_session: Session):
 
 @pytest.fixture
 def sample_doctor(db_session: Session):
-    doctor = Doctor(id=960614932, full_name="ИВА САЈКОВСКА")
+    doctor = Doctor(id=960614932, full_name="doctor iva")
     db_session.add(doctor)
     db_session.commit()
     return doctor
@@ -63,8 +63,8 @@ def test_get_by_id_invalid_formats(db_session: Session, invalid_id):
 
 
 def test_get_by_user_multiple_subs(db_session: Session, sample_user, sample_doctor):
-    doctor1 = Doctor(id=1096535518, full_name="ВАНЧЕ ТРАЈКОВСКА")
-    doctor2 = Doctor(id=879157831, full_name="БОЖИДАР ПОПОСКИ")
+    doctor1 = Doctor(id=1096535518, full_name="doctor ana")
+    doctor2 = Doctor(id=879157831, full_name="doctor mira")
     db_session.add_all([doctor1, doctor2, sample_doctor])
     db_session.commit()
 

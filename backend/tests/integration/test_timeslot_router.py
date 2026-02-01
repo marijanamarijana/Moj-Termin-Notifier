@@ -6,7 +6,7 @@ from model.models import Doctor, DoctorTimeslot
 
 @pytest.fixture
 def sample_doctor(db_session: Session):
-    doctor = Doctor(id=960614932, full_name="ИВА САЈКОВСКА")
+    doctor = Doctor(id=960614932, full_name="doctor iva")
     db_session.add(doctor)
     db_session.commit()
     db_session.refresh(doctor)

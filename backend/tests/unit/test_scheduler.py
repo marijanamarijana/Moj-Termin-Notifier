@@ -8,7 +8,7 @@ from scheduler.scheduler import job, start_scheduler
 @pytest.fixture()
 def sample_data(db_session):
     user = User(email="test@example.com", username="username", password="password")
-    doctor = Doctor(id=960614932, full_name="ИВА САЈКОВСКА")
+    doctor = Doctor(id=960614932, full_name="doctor iva")
     subscription = DoctorSubscription(user_id=user.id, doctor_id=doctor.id, user=user, doctor=doctor)
     db_session.add_all([user, doctor, subscription])
     db_session.commit()
