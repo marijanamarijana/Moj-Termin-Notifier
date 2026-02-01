@@ -55,6 +55,38 @@ def test_register_existing_user_email_and_username(client, db_session, sample_us
     assert response.json()['detail'] == "User with this email or username already exists"
 
 
+@pytest.mark.parametrize("invalid_email", [
+    "plainaddress",
+    "missingatsign.com",
+    "missingdomain@",
+    "@missingusername.com",
+    "test@.com",
+    "test@com",
+    "test@domain..com",
+])
+def test_register_user_invalid_email(client, invalid_email):
+    payload = {
+        "email": invalid_email,
+        "username": "validusername",
+        "password": "password123"
+    }
+
+    response = client.post("/api/users/register", json=payload)
+
+    assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
+
+
+def test_register_user_missing_password(client):
+    payload = {
+        "email": "test@example.com",
+        "username": "validusername"
+    }
+
+    response = client.post("/api/users/register", json=payload)
+
+    assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
+
+
 def test_login_user_success(client, db_session, sample_user):
     form_data = {"username": sample_user.username, "password": "password"}
     response = client.post("/api/users/login", data=form_data)

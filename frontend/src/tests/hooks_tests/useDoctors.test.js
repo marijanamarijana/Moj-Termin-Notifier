@@ -11,12 +11,12 @@ vi.mock("../../repository/doctorRepository", () => ({
 
 const doctor1 = {
   id: 1096535518,
-  full_name: "ВАНЧЕ ТРАЈКОВСКА",
+  full_name: "doctor ana",
 };
 
 const doctor2 = {
   id: 879157831,
-  full_name: "БОЖИДАР ПОПОСКИ",
+  full_name: "doctor mira",
 };
 
 describe("useDoctors hook tests", () => {

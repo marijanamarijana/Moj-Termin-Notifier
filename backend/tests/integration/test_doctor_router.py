@@ -9,7 +9,7 @@ from fastapi import status
 @patch("services.doctor_service.timeslot_service.create_timeslot")
 def test_add_doctor_success(mock_create, mock_timeslots, mock_get, client, db_session):
     mock_response = MagicMock(status_code=200)
-    mock_response.json.return_value = {"name": "ИВА САЈКОВСКА", "timeslots": []}
+    mock_response.json.return_value = {"name": "doctor iva", "timeslots": []}
     mock_get.return_value = mock_response
 
     payload = {"doctor_id": 960614932}
@@ -18,7 +18,7 @@ def test_add_doctor_success(mock_create, mock_timeslots, mock_get, client, db_se
     assert response.status_code == 200
     data = response.json()
     assert data["id"] == 960614932
-    assert data["full_name"] == "ИВА САЈКОВСКА"
+    assert data["full_name"] == "doctor iva"
 
     doctor = db_session.query(Doctor).filter(Doctor.id == 960614932).first()
     assert doctor is not None
@@ -66,12 +66,12 @@ def test_add_doctor_api_code_422(mock_get, client, invalid_doctor_ids):
 @patch("services.doctor_service.timeslot_service.get_timeslots_from_api", return_value=[])
 @patch("services.doctor_service.timeslot_service.create_timeslot")
 def test_add_doctor_already_exists_409(mock_create, mock_timeslots, mock_get, client, db_session):
-    doc = Doctor(id=960614932, full_name="ИВА САЈКОВСКА")
+    doc = Doctor(id=960614932, full_name="doctor iva")
     db_session.add(doc)
     db_session.commit()
 
     mock_response = MagicMock(status_code=200)
-    mock_response.json.return_value = {"name": "ИВА САЈКОВСКА", "timeslots": []}
+    mock_response.json.return_value = {"name": "doctor iva", "timeslots": []}
     mock_get.return_value = mock_response
 
     payload = {"doctor_id": 960614932}
@@ -90,9 +90,9 @@ def test_get_all_doctors_empty(client):
 
 def test_get_all_doctors(client, db_session):
     doctors = [
-        Doctor(id=960614932, full_name="ИВА САЈКОВСКА"),
-        Doctor(id=1096535518, full_name="ВАНЧЕ ТРАЈКОВСКА"),
-        Doctor(id=879157831, full_name="БОЖИДАР ПОПОСКИ"),
+        Doctor(id=960614932, full_name="doctor iva"),
+        Doctor(id=1096535518, full_name="doctor ana"),
+        Doctor(id=879157831, full_name="doctor mira"),
     ]
     db_session.add_all(doctors)
     db_session.commit()
@@ -106,13 +106,13 @@ def test_get_all_doctors(client, db_session):
     assert len(data) == 3
 
     names = [d["full_name"] for d in data]
-    assert "БОЖИДАР ПОПОСКИ" in names
-    assert "ВАНЧЕ ТРАЈКОВСКА" in names
-    assert "ИВА САЈКОВСКА" in names
+    assert "doctor mira" in names
+    assert "doctor ana" in names
+    assert "doctor iva" in names
 
 
 def test_get_doctor_by_id_existing(client, db_session):
-    doc = Doctor(id=960614932, full_name="ИВА САЈКОВСКА")
+    doc = Doctor(id=960614932, full_name="doctor iva")
     db_session.add(doc)
     db_session.commit()
 
@@ -121,7 +121,7 @@ def test_get_doctor_by_id_existing(client, db_session):
     assert response.status_code == 200
     data = response.json()
     assert data["id"] == 960614932
-    assert data["full_name"] == "ИВА САЈКОВСКА"
+    assert data["full_name"] == "doctor iva"
 
 
 def test_get_doctor_by_id_nonexistent(client):

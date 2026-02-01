@@ -41,20 +41,20 @@ def test_add_doctor_success_returns_multiple_slots(db_session, mock_repo, mock_t
 
         mock_response = MagicMock(status_code=200)
         mock_response.json.return_value = {
-            "name": "ИВА САЈКОВСКА",
+            "name": "doctor iva",
             "timeslots": ["2025-10-23T10:00", "2025-10-23T11:00"]
         }
 
         mock_get.return_value = mock_response
         mock_get_timeslots.return_value = ["2025-10-23T10:00", "2025-10-23T11:00"]
 
-        doctor_instance = Doctor(id=960614932, full_name="ИВА САЈКОВСКА")
+        doctor_instance = Doctor(id=960614932, full_name="doctor iva")
         mock_create.return_value = doctor_instance
 
         result = doctor_service.add_doctor(db_session, 960614932)
 
         assert result.id == 960614932
-        assert result.full_name == "ИВА САЈКОВСКА"
+        assert result.full_name == "doctor iva"
         mock_check.assert_called_once_with(db_session, 960614932)
         mock_get.assert_called_once()
         mock_get_timeslots.assert_called_once_with(["2025-10-23T10:00", "2025-10-23T11:00"])
@@ -76,17 +76,17 @@ def test_add_doctor_with_no_available_dates_creates_doctor_only(db_session, mock
         mock_get_by_id.return_value = None
 
         mock_response = MagicMock(status_code=200)
-        mock_response.json.return_value = {"name": "ИВА САЈКОВСКА", "timeslots": []}
+        mock_response.json.return_value = {"name": "doctor iva", "timeslots": []}
         mock_get.return_value = mock_response
         mock_get_timeslots.return_value = []
 
-        doctor_instance = Doctor(id=960614932, full_name="ИВА САЈКОВСКА")
+        doctor_instance = Doctor(id=960614932, full_name="doctor iva")
         mock_create.return_value = doctor_instance
 
         result = doctor_service.add_doctor(db_session, 960614932)
 
         assert result.id == 960614932
-        assert result.full_name == "ИВА САЈКОВСКА"
+        assert result.full_name == "doctor iva"
         mock_check.assert_called_once_with(db_session, 960614932)
         mock_get.assert_called_once()
         mock_get_timeslots.assert_called_once_with([])
@@ -133,7 +133,7 @@ def test_add_doctor_api_not_found_raises(db_session, mock_repo, mock_requests):
 
 
 def test_get_doctor_by_id_returns_correct_doctor(db_session):
-    doctor = Doctor(id=960614932, full_name="ИВА САЈКОВСКА")
+    doctor = Doctor(id=960614932, full_name="doctor iva")
     db_session.add(doctor)
     db_session.commit()
 
@@ -141,7 +141,7 @@ def test_get_doctor_by_id_returns_correct_doctor(db_session):
 
     assert result is not None
     assert result.id == doctor.id
-    assert result.full_name == "ИВА САЈКОВСКА"
+    assert result.full_name == "doctor iva"
 
 
 @pytest.mark.parametrize("invalid_id", [
@@ -158,9 +158,9 @@ def test_get_doctor_by_id_returns_none_for_nonexistent_id(db_session, invalid_id
 
 def test_get_all_doctors_returns_all_entries(db_session):
     doctors = [
-        Doctor(id=960614932, full_name="ИВА САЈКОВСКА"),
-        Doctor(id=1096535518, full_name="ВАНЧЕ ТРАЈКОВСКА"),
-        Doctor(id=879157831, full_name="БОЖИДАР ПОПОСКИ"),
+        Doctor(id=960614932, full_name="doctor iva"),
+        Doctor(id=1096535518, full_name="doctor ana"),
+        Doctor(id=879157831, full_name="doctor mira"),
     ]
     db_session.add_all(doctors)
     db_session.commit()
@@ -170,9 +170,9 @@ def test_get_all_doctors_returns_all_entries(db_session):
     assert len(result) == 3
 
     names = [d.full_name for d in result]
-    assert "БОЖИДАР ПОПОСКИ" in names
-    assert "ВАНЧЕ ТРАЈКОВСКА" in names
-    assert "ИВА САЈКОВСКА" in names
+    assert "doctor mira" in names
+    assert "doctor ana" in names
+    assert "doctor iva" in names
 
 
 def test_get_all_doctors_returns_empty_list_when_no_doctors(db_session):

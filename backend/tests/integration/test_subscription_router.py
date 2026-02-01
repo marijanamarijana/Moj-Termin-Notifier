@@ -15,7 +15,7 @@ def sample_user(db_session: Session):
 
 @pytest.fixture
 def sample_doctor(db_session: Session):
-    doctor = Doctor(id=960614932, full_name="ИВА САЈКОВСКА")
+    doctor = Doctor(id=960614932, full_name="doctor iva")
     db_session.add(doctor)
     db_session.commit()
     db_session.refresh(doctor)
@@ -88,7 +88,7 @@ def test_get_subscription_by_id_not_found(auth_client):
 
 
 def test_get_subscriptions_by_user(auth_client, db_session, sample_user, sample_doctor):
-    doc2 = Doctor(id=1096535518, full_name="ВАНЧЕ ТРАЈКОВСКА")
+    doc2 = Doctor(id=1096535518, full_name="doctor ana")
     db_session.add(doc2)
 
     db_session.add_all([

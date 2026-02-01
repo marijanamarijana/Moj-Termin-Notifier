@@ -6,7 +6,7 @@ from repos import timeslot_repo
 
 @pytest.fixture
 def sample_doctor(db_session):
-    doctor = Doctor(id=960614932, full_name="ИВА САЈКОВСКА")
+    doctor = Doctor(id=960614932, full_name="doctor iva")
     db_session.add(doctor)
     db_session.commit()
     return doctor
